@@ -25,7 +25,7 @@ We have so far made design decisions informally and mostly in private. That has 
 4. Debates have no structured home. Some questions ("should we do this at all?") deserve serious discussion but are not yet proposals. Without a home for them, they either sit as half-committed roadmap items or spread across chat threads.
 5. Design rigour benefits from collaboration. Writing a design down for public review and discussing it forces more precision than private notes.
 
-In the spirit of the original IETF Request for Comments series, RFCs here are encouraged to be timely rather than polished. An RFC does not need to be authoritative to be worth writing - the point is to get ideas into a form where they can be openly discussed.
+In the spirit of the original IETF Request for Comments series, RFCs here are encouraged to be timely rather than polished. An RFC does not need to be authoritative to be worth writing - the point is to get ideas into a form where they can be openly discussed. The resemblance to the IETF RFCs ends with the name and that spirit: this process is not modelled on the modern IETF standards track, and the processes it does draw inspiration from are listed under [Prior art](#prior-art).
 
 ## Impact
 
@@ -45,6 +45,7 @@ The vast majority of changes do not need an RFC and should go through the ordina
 - Changing a project's security or privacy model.
 - Introducing a new major subsystem or changing the architecture of an existing one.
 - Adding constraints on future development: decisions that are expensive to revise once made, such as file formats, protocols, and public APIs.
+- Creating a new Irbis project, or adopting an existing one into the organisation.
 - Changing organisation-wide policy or process, including this process itself.
 - Anything else where public collaboration and scrutiny are beneficial to the final result.
 
@@ -64,7 +65,7 @@ Every RFC declares one of three types in its frontmatter:
 
 ### Scope and the `project` field
 
-This repository serves the whole Irbis organisation. Each RFC declares which project it applies to via the `project:` frontmatter field. RFCs that apply organisation-wide omit the field. RFC numbers form a single series across all projects.
+This repository serves the whole Irbis organisation. Each RFC declares which project it applies to via the `project:` frontmatter field. RFCs that apply organisation-wide omit the field. An RFC proposing a new project sets `project:` to the proposed name. RFC numbers form a single series across all projects.
 
 ### Roles
 
@@ -77,7 +78,7 @@ This repository serves the whole Irbis organisation. Each RFC declares which pro
 An RFC is in one of six states, recorded in its `status:` frontmatter field. Only the maintainers decide an RFC's status.
 
 - `draft` - the RFC exists as an open pull request and is under discussion. Every RFC starts here.
-- `active` - the RFC has been accepted and merged. A tracking issue is opened in the relevant project repository and linked in the RFC's `tracking:` frontmatter field.
+- `active` - the RFC has been accepted and merged. A tracking issue is opened in the relevant project repository (for a newly proposed project, once its repository is created) and linked in the RFC's `tracking:` frontmatter field.
 - `shipped` - the design has shipped in a release.
 - `closed` - evaluated and declined.
 - `postponed` - a reasonable idea whose time has not yet come. May be picked up later when circumstances change.
