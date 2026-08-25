@@ -57,7 +57,7 @@ RFCs are not feature requests - these belong in the project repository's Discuss
 
 Every RFC declares one of three types in its frontmatter:
 
-- **Feature** proposes a concrete change to a product. Uses the full [template](../0000-template.md).
+- **Feature** proposes a concrete change to a product, or a new project altogether. Uses the full [template](../0000-template.md).
 - **Process** proposes a change to how the organisation works: this process, contribution policy, release practices. Uses the full [template](../0000-template.md).
 - **Discussion** poses a question: *should we do this at all?* A Discussion RFC might never produce code, and that is fine - a well-argued decision *not* to do something is just as valuable, and gives something to link to the next time the question comes up. Discussion RFCs may omit the [Impact](../0000-template.md#impact), [Design](../0000-template.md#design), and [Future possibilities](../0000-template.md#future-possibilities) sections of the [template](../0000-template.md). The remaining sections are required.
 
