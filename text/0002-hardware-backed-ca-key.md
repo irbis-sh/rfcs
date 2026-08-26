@@ -46,7 +46,7 @@ In practice, an infostealer running under the user's account could copy a CA key
 The root CA key is generated inside, and never leaves, the platform's key hardware:
 
 - **macOS**: an ECDSA P-256 key in the Secure Enclave, created with `SecKeyCreateRandomKey` (`kSecAttrTokenIDSecureEnclave`, data protection keychain), signing with `SecKeyCreateSignature`. Its access control is built with `SecAccessControlCreateWithFlags` carrying `kSecAccessControlPrivateKeyUsage` alone - no user-presence flag so the CA can sign unattended.
-- **Windows**: an RSA-2048 key created with `NCryptCreatePersistedKey` and `NCryptFinalizeKey` under the CNG "Microsoft Platform Crypto Provider" - the TPM-backed provider - signing with `NCryptSignHash` (PKCS#1 v1.5).
+- **Windows**: an ECDSA P-256 key created with `NCryptCreatePersistedKey` and `NCryptFinalizeKey` under the CNG "Microsoft Platform Crypto Provider" - the TPM-backed provider - signing with `NCryptSignHash`, whose raw `r || s` output is converted to the DER form X.509 expects.
 
 The application holds a key handle and can request signatures. Nothing - including Zen - can read the private key. The root certificate is public and is still written to disk for trust-store installation as today.
 
@@ -88,7 +88,7 @@ The benchmarks can be run with `task bench` (software baseline) and `task bench-
 - **Release and testing complexity on macOS**. The provisioning profile requirement means the Enclave path only runs in a signed, bundled app. CI and local development need the software fallback, so the production path gets less day-to-day testing.
 - **A one-time migration prompt for every user who opts in**, with the confusion and support burden that brings.
 - **The intermediate is still a software key**. Exposure is bounded by its TTL, not eliminated.
-- **Platform divergence**. We take on two hardware backends with different algorithms, and Linux users keep the weak storage until the follow-up RFC.
+- **Platform divergence**. We take on two hardware backends behind different platform APIs, and Linux users keep the weak storage until the follow-up RFC.
 
 ## Rationale and alternatives
 
@@ -125,7 +125,7 @@ To resolve through this RFC's discussion:
 - **Prototype correctness**: whether `key-protecc`'s platform-specific backends implement the idea correctly - the right APIs, key attributes, and parameters.
 - **The intermediate's TTL**. A shorter TTL limits exposure more tightly. A longer one means fewer rotations and a simpler interaction with the 24-hour leaf TTL and the leaf cache: either a rotation invalidates cached leaves, or the TTL must exceed leaf validity.
 - **The default**: whether, and when, hardware keys become the default rather than an opt-in.
-- **Windows key algorithm**: RSA-2048 is the more established algorithm, but TPM 2.0 also mandates ECDSA P-256, which would match the macOS root - worth testing in the prototype before deciding. Also, how common a TPM 2.0 actually is on Windows 10 hardware.
+- **TPM prevalence**: how common a working TPM 2.0 actually is on Windows 10 hardware.
 
 During implementation: keychain attribute details, how errors are grouped and reported, and the shape of the software-fallback build tag.
 
