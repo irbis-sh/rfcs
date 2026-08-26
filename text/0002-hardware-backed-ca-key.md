@@ -72,14 +72,13 @@ The macOS release pipeline additionally embeds a provisioning profile with the e
 
 ### The prototype
 
-See [key-protecc](https://github.com/anfragment/key-protecc), which implements all three backends - the Secure Enclave through the Security framework (cgo), CNG/NCrypt on Windows, and (ahead of the follow-up RFC) a TPM 2.0 through `go-tpm` on Linux. To run the full flow locally - create a key, sign a root, issue a leaf, verify the chain - use these [Task](https://taskfile.dev) commands:
+See [key-protecc](https://github.com/anfragment/key-protecc), which implements all three backends - the Secure Enclave through the Security framework (cgo), CNG/NCrypt on Windows, and (ahead of the follow-up RFC) a TPM 2.0 through `go-tpm` on Linux. To run the full flow locally - create a key, sign a root, issue a leaf, verify the chain - install [Go](https://go.dev/dl/) and use these [Task](https://taskfile.dev) commands:
 
 ```sh
-task certtest          # software key - runs anywhere, no hardware or entitlements
-task certtest-enclave  # the same flow against the Secure Enclave
+task certtest  # software key on macOS; the platform TPM on Windows
 ```
 
-The Enclave variant has to build a signed `.app` bundle with the provisioning profile embedded (`macos/bundle.sh`, configured through `macos/signing.env`), because of the entitlement rule above. This needs a real developer certificate issued by Apple.
+Running the same flow against the Secure Enclave (`task certtest-enclave`) has to build a signed `.app` bundle with the provisioning profile embedded (`macos/bundle.sh`, configured through `macos/signing.env`), because of the entitlement rule. This needs a real developer certificate issued by Apple.
 
 The benchmarks can be run with `task bench` (software baseline) and `task bench-enclave`.
 
