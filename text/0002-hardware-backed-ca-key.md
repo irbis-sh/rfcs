@@ -24,7 +24,7 @@ Zen filters HTTPS traffic by installing a locally generated root CA into the sys
 
 In practice, an infostealer running under the user's account could copy a CA key that this machine will trust for decades. With any later chance to intercept traffic - a compromised network, a re-infection - it could indefinitely impersonate every HTTPS host the user visits with no warnings. Uninstalling Zen does not always revoke the CA, so the user would have to know to remove it from the trust store themselves.
 
-[Zen's security architecture document](https://github.com/irbis-sh/zen-desktop/blob/master/docs/internal/security-architecture.md) acknowledges this as an open problem ("We're currently exploring ways to encrypt the private key using system APIs"). This RFC addresses that alongside a prototype, [key-protecc](https://github.com/anfragment/key-protecc).
+[Zen's security architecture document](https://github.com/irbis-sh/zen-desktop/blob/master/docs/explanation/security-architecture.md) acknowledges this as an open problem ("We're currently exploring ways to encrypt the private key using system APIs"). This RFC addresses that alongside a prototype, [key-protecc](https://github.com/anfragment/key-protecc).
 
 ## Impact
 
