@@ -4,7 +4,7 @@ title: The Irbis RFC process
 type: process
 authors:
   - anfragment
-status: draft
+status: active
 discussion: https://github.com/irbis-sh/rfcs/pull/1
 start-date: 2026-08-24
 ---

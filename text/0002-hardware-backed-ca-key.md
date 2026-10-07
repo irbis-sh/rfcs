@@ -5,8 +5,9 @@ project: zen
 type: feature
 authors:
   - anfragment
-status: draft
-discussion: https://github.com/irbis-sh/rfcs/pull/0000
+status: active
+tracking: https://github.com/irbis-sh/zen-desktop/issues/811
+discussion: https://github.com/irbis-sh/rfcs/pull/2
 start-date: 2026-08-24
 ---
 
