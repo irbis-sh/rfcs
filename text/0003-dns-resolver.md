@@ -37,7 +37,7 @@ A new **DNS server** setting:
 - **Presets**: Quad9, Cloudflare, Google, OpenDNS, all over DoH.
 - **Custom**: a DoH URL (`https://…`).
 
-The default is an open question, see [Unresolved questions](#unresolved-questions).
+The default is System default. See [Rationale and alternatives](#rationale-and-alternatives).
 
 While Zen uses system DNS instead of the selected server, the setting says why: the server is unreachable (with the TLS error if the certificate failed verification), a VPN handles all DNS, or the network has no IPv4 route.
 
@@ -193,6 +193,7 @@ Change events are noisy: switching Wi-Fi networks produces a dozen or so within 
 - Only the proxy's lookups are encrypted.
 - CNAME checks only run on DoH answers, so they skip every lookup that goes to the OS resolver.
 - CDN servers may be farther away than the ones the ISP's resolver would return.
+- With System default as the default, users get encrypted DNS and CNAME checks only after selecting a server.
 - Without an NXDOMAIN fallback, an internal name not covered by any announced domain fails until the user adds its domain to **Use system DNS**.
 
 ## Rationale and alternatives
@@ -207,7 +208,9 @@ Change events are noisy: switching Wi-Fi networks produces a dozen or so within 
 
 **Synthesising IPv6 addresses for NAT64, as Firefox does.** Firefox finds the NAT64 prefix by looking up `ipv4only.arpa` ([RFC 7050](https://www.rfc-editor.org/rfc/rfc7050)), and appends synthesised IPv6 addresses after the IPv4 ones in DoH answers, so DoH keeps working on IPv6-only networks. In Zen, Go's resolver would sort the synthesised addresses ahead of native IPv4, since RFC 6724 gives them higher precedence. On a dual-stack network that also runs DNS64, traffic would then go through NAT64 for no reason. Avoiding that needs the IPv4 route check anyway, and desktops with no IPv4 route and no CLAT are rare.
 
-**Strict DoH with no fallback.** This is Firefox's "Max Protection". Captive portals and internal names would break, and users would learn to switch DoH off. An opt-in strict mode is an open question.
+**A preset as the default.** Every user would get encrypted DNS and CNAME checks. But every visited hostname would go to a provider the user didn't explicitly choose. The candidates were Quad9 (non-profit, Swiss jurisdiction, blocks known-malicious domains) and Cloudflare (no filtering on the base endpoint).
+
+**Strict DoH with no fallback.** This is Firefox's "Max Protection". Captive portals and internal names would break, and users would learn to switch DoH off. An opt-in strict mode is left for later, see [Future possibilities](#future-possibilities).
 
 **DNS-over-TLS.** DoH already gives similar privacy and security: both encrypt queries with TLS and authenticate the server. But DoT uses its own port, 853, which a network can block with one rule, while DoH shares port 443 with all other HTTPS traffic. DoT would also need its own client with connection reuse and pipelining, while DoH reuses `net/http`. Every preset offers DoH.
 
@@ -246,11 +249,6 @@ Zen never writes lookups to disk.
 
 ## Unresolved questions
 
-To resolve during RFC discussion:
-
-- **The default DNS server.** It could be System default or a preset. A preset gives every user encrypted DNS and CNAME checks, but sends every visited hostname to a provider the user didn't choose. Among presets, the candidates are Quad9 (non-profit, Swiss jurisdiction, blocks known-malicious domains) and Cloudflare (no filtering on the base endpoint).
-- **A strict mode** with no fallback, for users who prefer failed lookups over plaintext DNS.
-
 To resolve during implementation:
 
 - **VPN detection and Windows sources**: confirm how to tell that a VPN handles all DNS on each platform, and where Windows keeps the primary suffix, the suffix search list and NRPT rules, including those set by Group Policy.
@@ -264,6 +262,7 @@ Out of scope:
 
 ## Future possibilities
 
+- An opt-in strict mode with no fallback, for users who prefer failed lookups over plaintext DNS.
 - A separate RFC can add system-wide DNS filtering and encrypted DNS for every app, reusing the DoH client and resolver.
 - CNAME checks could work without DoH, through platform APIs that return DNS records: `DnsQueryEx` on Windows, `DNSServiceQueryRecord` on macOS, and systemd-resolved's `ResolveRecord` on Linux.
 - Synthesising IPv6 addresses for NAT64 would keep DoH working on IPv6-only networks without CLAT. [RFC 9872](https://www.rfc-editor.org/rfc/rfc9872) recommends taking the prefix from router advertisements ([RFC 8781](https://www.rfc-editor.org/rfc/rfc8781)), which few OSes expose to apps, and falling back to `ipv4only.arpa`.
