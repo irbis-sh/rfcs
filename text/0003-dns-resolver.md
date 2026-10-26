@@ -100,7 +100,7 @@ While the machine has no IPv4 route, every name also goes to the OS resolver. On
 
 **Answers.**
 
-- NXDOMAIN is final. See [Rationale and alternatives](#rationale-and-alternatives).
+- NXDOMAIN is final. See [Rationale and alternatives](#rationale-and-alternatives). The proxy dials rooted names, so Go doesn't retry the name under the network's search domains, see [HTTP proxy integration](#http-proxy-integration).
 - `0.0.0.0` and `::` answers, and Extended DNS Errors 15, 16 and 17 (Blocked, Censored, Filtered, [RFC 8914](https://www.rfc-editor.org/rfc/rfc8914)), block the request. The proxy doesn't dial `0.0.0.0`, which can reach the local machine.
 - Answers with private, loopback or link-local addresses are asked again of the OS resolver, as Firefox does (`network.trr.allow-rfc1918`). This keeps the router's DNS rebinding protection, and covers names that only resolve to a private address inside the network.
 - If DoH fails, the lookup goes to the OS resolver. Each lookup has a total time budget for DoH, shared by all its attempts.
@@ -128,15 +128,17 @@ Expiry uses wall-clock time, because Go's monotonic clock stops during sleep on 
 
 ### HTTP proxy integration
 
-**Dialling.** The proxy opens all its connections through one `net.Dialer`: requests, tunnels and WebSockets. The dialer gets a `net.Resolver` with two settings:
+**Dialling.** The proxy opens all its connections through one dial function: requests, tunnels and WebSockets. It appends a trailing dot to the hostname, `news.example.`, and hands the address to a `net.Dialer` whose `net.Resolver` has two settings:
 
 - `Dial`: a hook that gives Go's resolver a connection to send its DNS queries over. Zen's hook returns an in-memory connection to Zen's resolver.
 - `PreferGo`: without it, Go uses the OS resolver directly on macOS and Windows, and never calls the hook.
 
+The trailing dot keeps Go from trying the network's search domains ([`nameList`](https://github.com/golang/go/blob/go1.27.3/src/net/dnsclient_unix.go#L527)). Without it, after an NXDOMAIN for `malware.example`, Go would also query `malware.example.corp.example`, which falls under a search domain and so goes to the OS resolver in plaintext. The hosts file matches rooted names, and TLS takes its server name from the request, not the dialled address. Single-label names still get the search domains, from the OS resolver.
+
 For example, when the proxy dials `news.example:443`:
 
-1. Go looks up `news.example` in the hosts file. If it's there, Go skips to step 4.
-2. Go sends `A` and `AAAA` queries over the in-memory connection.
+1. Go looks up `news.example.` in the hosts file. If it's there, Go skips to step 4.
+2. Go sends `A` and `AAAA` queries for `news.example.` over the in-memory connection.
 3. Zen's resolver answers them from its cache or over DoH. For names routed to the OS, it answers with the OS resolver's result.
 4. Go sorts the addresses ([RFC 6724](https://www.rfc-editor.org/rfc/rfc6724)) and connects to the first one. If that hasn't connected after 300 ms, Go also starts on the other address family ([RFC 6555](https://www.rfc-editor.org/rfc/rfc6555), since obsoleted by [RFC 8305](https://www.rfc-editor.org/rfc/rfc8305)).
 
