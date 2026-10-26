@@ -96,7 +96,7 @@ While a VPN handles all DNS, every name goes to the OS resolver, as Firefox does
 
 While the machine has no IPv4 route, every name also goes to the OS resolver. On an IPv6-only network, only the network's DNS synthesises IPv6 addresses for IPv4-only sites (DNS64), so DoH answers for those sites would be unreachable. Zen checks for a route with a UDP connect to a public IPv4 address, which looks up the route without sending anything, at startup and on each network change. With CLAT, as on macOS 13 and later, the machine has an IPv4 route and DoH works as usual.
 
-`onion` names fail without a lookup ([RFC 7686](https://www.rfc-editor.org/rfc/rfc7686)). Every other name goes to the DoH server, with `A` and `AAAA` queries sent in parallel.
+Every other name goes to the DoH server, with `A` and `AAAA` queries sent in parallel.
 
 **Answers.**
 
