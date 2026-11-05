@@ -4,7 +4,7 @@ This repository holds Requests for Comments (RFCs) for [Irbis](https://github.co
 
 ## Participation
 
-Anyone is welcome to participate in the process. Please note that all discussion in this repository falls under the [Code of Conduct](CODE_OF_CONDUCT.md).
+Anyone is welcome to participate in the process, whether by commenting on and reviewing [open RFCs](https://github.com/irbis-sh/rfcs/pulls) or by proposing a new one. [RFC 0001](./text/0001-irbis-rfc-process.md) explains how the process works. Please note that all discussion in this repository falls under the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Licence
 
